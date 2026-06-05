@@ -1,0 +1,73 @@
+rules:
+  - id: swag-missing-signature-verification
+    pattern-either:
+      - pattern: |
+          @app.route(...)
+          def $FUNC(...):
+              ...
+              $DATA = request.form.to_dict()
+              ...
+              if $DATA.get('RtnCode') == '1':
+                  ...
+      - pattern: |
+          @app.route(...)
+          def $FUNC(...):
+              ...
+              $DATA = request.json
+              ...
+              if $DATA.get('trade_status') == 'TRADE_SUCCESS':
+                  ...
+    message: |
+      [P0 CRITICAL] 偵測到疑似支付回調接口（綠界/支付寶/微信）未進行簽章驗證！
+      直接信任回調參數中的支付成功狀態（RtnCode=1 或 TRADE_SUCCESS）會導致「偽造回調無成本充值」漏洞。
+      必須先驗證 CheckMacValue 或 Signature。
+    languages: [python]
+    severity: ERROR
+
+  - id: swag-unsafe-wallet-update
+    pattern: |
+      $WALLET = UserWallet.objects.get(user_id=$USER)
+      ...
+      if $WALLET.balance >= $BET:
+          $WALLET.balance -= $BET
+          $WALLET.save()
+    message: |
+      [P0 CRITICAL] 偵測到不安全的錢包扣款邏輯！
+      先讀取餘額、在內存做減法、再寫回數據庫的模式，在高並發下會導致「競態條件」與「並發負餘額（刷鑽石/重複投注）」漏洞。
+      必須使用 `select_for_update()` 悲觀鎖，或者使用 F() 表達式/數據庫 CAS 樂觀鎖。
+    languages: [python]
+    severity: ERROR
+
+  - id: swag-frontend-price-tampering
+    pattern-either:
+      - pattern: |
+          axios.post('/api/v1/payment/create-order', {
+              ...,
+              amount: $AMOUNT,
+              ...
+          })
+      - pattern: |
+          fetch('/api/v1/payment/create-order', {
+              method: 'POST',
+              body: JSON.stringify({
+                  ...,
+                  amount: $AMOUNT,
+                  ...
+              })
+          })
+    message: |
+      [P0 CRITICAL] 偵測到前端（React/JS）直接向後端發送金額參數！
+      金額或賠率等核心計費數據絕對不能由前端計算或傳遞，否則攻擊者可以通過修改網絡請求（如將 1000 元改為 1 元）實現金額篡改攻擊。
+      前端僅能傳遞 productId 或 betArea，由後端從數據庫中查詢真實價格或賠率。
+    languages: [javascript, typescript]
+    severity: ERROR
+
+  - id: swag-xss-dangerously-set-inner-html
+    pattern: |
+      <div dangerouslySetInnerHTML={{__html: $HTML}} />
+    message: |
+      [P1 MAJOR] 偵測到在 React 中使用了 dangerouslySetInnerHTML！
+      這在直播間彈幕、用戶評論等高交互場景中，極易引入「存儲型 XSS 漏洞」，導致主播或用戶的 Session Token 被惡意腳本竊取。
+      如果必須渲染富文本，必須先使用 DOMPurify 等安全庫進行嚴格的 Sanitization 消毒。
+    languages: [javascript, typescript]
+    severity: WARNING
