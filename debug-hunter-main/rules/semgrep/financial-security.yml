@@ -1,0 +1,106 @@
+# Semgrep 規則：財務安全快篩（對應 rules-registry.md 的 RULE-SEC-* / RULE-FIN-*）
+# 定位：同方法「缺 sanitizer」快篩；跨層 controller→service→repo 的深度 taint 交給 CodeQL。
+# 測試：同目錄 financial-security.java（ruleid/ok 標註）。驗證：semgrep scan --config <此檔> <fixture>
+# 落地建議：偏語意者（簽章 / 雙人覆核 / velocity）留 CodeQL 或人工。
+rules:
+  # ---- RULE-SEC-101：IDOR — 請求 id 流入資金 sink 但同方法內無歸屬校驗 ----
+  - id: idor-money-sink-missing-ownership
+    languages: [java]
+    severity: ERROR
+    metadata:
+      pattern: PAT-SEC-101
+      rule: RULE-SEC-101
+      cwe: "CWE-639"
+      owasp: "API1:2023 BOLA"
+      invariant: INV-ST-01
+      confidence: medium
+    message: >
+      請求可控的 account/order id 流入資金操作，且同方法內未見歸屬校驗
+      (PAT-SEC-101 / RULE-SEC-101)。請確認 id 屬於認證主體，或由 repository SQL 強制 WHERE user_id。
+    patterns:
+      - pattern-either:
+          - pattern: "$R $M(..., @RequestParam $T $ID, ...) { ... $SVC.debit($ID, ...); ... }"
+          - pattern: "$R $M(..., @RequestParam $T $ID, ...) { ... $SVC.credit($ID, ...); ... }"
+          - pattern: "$R $M(..., @PathVariable $T $ID, ...) { ... $SVC.debit($ID, ...); ... }"
+      - metavariable-regex:
+          metavariable: $ID
+          regex: (?i).*(account|order|wallet|user).*id.*
+      - pattern-not: "$R $M(...) { ... $REPO.findByIdAndUserId(...); ... }"
+      - pattern-not: "$R $M(...) { ... $REPO.selectByIdAndUserId(...); ... }"
+      - pattern-not: "$R $M(...) { ... securityContext.checkOwner(...); ... }"
+
+  # ---- RULE-SEC-102：金額流入資金 sink 但同方法內無 signum/上限校驗 ----
+  - id: amount-sink-missing-validation
+    languages: [java]
+    severity: ERROR
+    metadata:
+      pattern: PAT-SEC-102
+      rule: RULE-SEC-102
+      cwe: "CWE-20"
+      invariant: INV-TXN-02
+      confidence: medium
+    message: >
+      金額流入資金操作但同方法內未見 signum/上限/scale 校驗 (PAT-SEC-102 / RULE-SEC-102)。
+    patterns:
+      - pattern-either:
+          - pattern: "$R $M(..., @RequestParam BigDecimal $AMT, ...) { ... $SVC.debit(..., $AMT); ... }"
+          - pattern: "$R $M(..., @RequestParam BigDecimal $AMT, ...) { ... $SVC.credit(..., $AMT); ... }"
+      - pattern-not: "$R $M(..., @RequestParam BigDecimal $AMT, ...) { ... if ($AMT.signum() <= 0) { ... } ... }"
+      - pattern-not: "$R $M(..., @RequestParam BigDecimal $AMT, ...) { ... if ($AMT.compareTo(...) > 0) { ... } ... }"
+      - pattern-not: "$R $M(...) { ... AmountValidator.validate(...); ... }"
+
+  # ---- RULE-SEC-106：mass assignment — 請求直接綁定持久化實體後寫入 ----
+  - id: mass-assignment-entity-persist
+    languages: [java]
+    severity: ERROR
+    metadata:
+      pattern: PAT-SEC-106
+      rule: RULE-SEC-106
+      cwe: "CWE-915"
+      owasp: "API3:2023"
+      confidence: medium
+    message: >
+      請求 body 直接綁定並持久化實體，可能夾帶 balance/status 等敏感欄位 (PAT-SEC-106 / RULE-SEC-106)。
+      請改用白名單 DTO 並逐欄賦值。
+    patterns:
+      - pattern-either:
+          - pattern: "$RET $M(@RequestBody $ENTITY $E, ...) { ... $REPO.updateById($E); ... }"
+          - pattern: "$RET $M(@RequestBody $ENTITY $E, ...) { ... $REPO.save($E); ... }"
+
+  # ---- RULE-SEC-109：動態 SQL 注入（請求參數字串拼接進 SQL）----
+  - id: dynamic-sql-injection-ledger
+    languages: [java]
+    severity: ERROR
+    metadata:
+      pattern: PAT-SEC-109
+      rule: RULE-SEC-109
+      cwe: "CWE-89"
+      confidence: high
+    message: >
+      以字串拼接組成 SQL，存在注入風險 (PAT-SEC-109 / RULE-SEC-109)。請改用參數化查詢，排序欄位用白名單。
+    patterns:
+      - pattern-either:
+          - pattern: $JDBC.queryForList("..." + $X)
+          - pattern: $JDBC.query("..." + $X)
+          - pattern: $ST.executeQuery("..." + $X)
+
+  # ---- RULE-FIN-003：金融數值欄位禁止 double/float ----
+  - id: no-double-float-for-money
+    languages: [java]
+    severity: ERROR
+    metadata:
+      pattern: PAT-FIN-002
+      rule: RULE-FIN-003
+      cwe: "CWE-681"
+      confidence: high
+    message: >
+      金額/比率/餘額欄位使用 double/float，將累積浮點誤差 (PAT-FIN-002 / RULE-FIN-003)。
+      請改用 BigDecimal，或以 long（最小單位）儲存。
+    patterns:
+      - pattern-either:
+          - pattern: "private double $F;"
+          - pattern: "private float $F;"
+          - pattern: "double $F = $REQ.getAmount();"
+      - metavariable-regex:
+          metavariable: $F
+          regex: (?i).*(amount|price|fee|profit|balance|rate|payout).*

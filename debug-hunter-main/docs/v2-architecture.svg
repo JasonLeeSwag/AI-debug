@@ -1,0 +1,176 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" font-family="'PingFang TC','Noto Sans CJK TC','Microsoft JhengHei','Heiti TC',sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0B1220"/>
+      <stop offset="1" stop-color="#0E1A33"/>
+    </linearGradient>
+    <linearGradient id="loopHead" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#22D3EE"/>
+      <stop offset="1" stop-color="#34D399"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#5EEAD4"/>
+    </marker>
+    <marker id="arrowDim" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#93A4C7"/>
+    </marker>
+  </defs>
+
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+
+  <!-- Header -->
+  <text x="60" y="72" fill="#E5EDFF" font-size="42" font-weight="700">debug-hunter <tspan fill="#34D399">v2.0</tspan></text>
+  <text x="60" y="110" fill="#93A4C7" font-size="22">金融資安雙軌獵殺框架　·　7 階段閉環 × 三層防線</text>
+  <text x="1540" y="78" text-anchor="end" fill="#64748B" font-size="15">正確性帽：程式會不會自己算錯</text>
+  <text x="1540" y="102" text-anchor="end" fill="#64748B" font-size="15">安全帽：攻擊者能不能讓它替他算</text>
+
+  <!-- Section A title -->
+  <text x="60" y="168" fill="#5EEAD4" font-size="17" font-weight="700" letter-spacing="2">7 階段閉環　CLOSED LOOP</text>
+
+  <!-- 7 stage boxes -->
+  <!-- generated: x = 40 + i*219, w=203, y=188, h=150 -->
+  <g>
+    <!-- box template repeated -->
+    <!-- 0 -->
+    <rect x="40" y="188" width="203" height="150" rx="14" fill="#111C34" stroke="#1E3358" stroke-width="1.5"/>
+    <rect x="40" y="188" width="203" height="34" rx="14" fill="#13243F"/>
+    <circle cx="63" cy="205" r="11" fill="#22D3EE"/><text x="63" y="210" text-anchor="middle" fill="#06222B" font-size="13" font-weight="700">0</text>
+    <text x="82" y="210" fill="#9FB4D8" font-size="12.5" font-weight="700">THREAT-MODEL</text>
+    <text x="62" y="262" fill="#E5EDFF" font-size="20" font-weight="700">威脅建模</text>
+    <text x="62" y="292" fill="#8FA3C6" font-size="12.5">STRIDE-FIN</text>
+    <text x="62" y="311" fill="#8FA3C6" font-size="12.5">＋ 濫用案例</text>
+
+    <!-- 1 -->
+    <rect x="259" y="188" width="203" height="150" rx="14" fill="#111C34" stroke="#1E3358" stroke-width="1.5"/>
+    <rect x="259" y="188" width="203" height="34" rx="14" fill="#13243F"/>
+    <circle cx="282" cy="205" r="11" fill="#22D3EE"/><text x="282" y="210" text-anchor="middle" fill="#06222B" font-size="13" font-weight="700">1</text>
+    <text x="301" y="210" fill="#9FB4D8" font-size="12.5" font-weight="700">DETECT</text>
+    <text x="281" y="262" fill="#E5EDFF" font-size="20" font-weight="700">偵測 · 雙軌</text>
+    <text x="281" y="292" fill="#8FA3C6" font-size="12.5">正確性 ＋ 安全</text>
+    <text x="281" y="311" fill="#8FA3C6" font-size="12.5">taint source→sink</text>
+
+    <!-- 2 -->
+    <rect x="478" y="188" width="203" height="150" rx="14" fill="#111C34" stroke="#1E3358" stroke-width="1.5"/>
+    <rect x="478" y="188" width="203" height="34" rx="14" fill="#13243F"/>
+    <circle cx="501" cy="205" r="11" fill="#22D3EE"/><text x="501" y="210" text-anchor="middle" fill="#06222B" font-size="13" font-weight="700">2</text>
+    <text x="520" y="210" fill="#9FB4D8" font-size="12.5" font-weight="700">TRIAGE</text>
+    <text x="500" y="262" fill="#E5EDFF" font-size="20" font-weight="700">分類定級</text>
+    <text x="500" y="292" fill="#8FA3C6" font-size="12.5">金額計價風險</text>
+    <text x="500" y="311" fill="#8FA3C6" font-size="12.5">期望資損 (ALE)</text>
+
+    <!-- 3 (2.5 reproduce) -->
+    <rect x="697" y="188" width="203" height="150" rx="14" fill="#111C34" stroke="#1E3358" stroke-width="1.5"/>
+    <rect x="697" y="188" width="203" height="34" rx="14" fill="#13243F"/>
+    <circle cx="724" cy="205" r="11" fill="#22D3EE"/><text x="724" y="210" text-anchor="middle" fill="#06222B" font-size="11" font-weight="700">2.5</text>
+    <text x="743" y="210" fill="#9FB4D8" font-size="12.5" font-weight="700">REPRODUCE</text>
+    <text x="719" y="262" fill="#E5EDFF" font-size="20" font-weight="700">復現</text>
+    <text x="719" y="292" fill="#8FA3C6" font-size="12.5">攻擊 PoC</text>
+    <text x="719" y="311" fill="#8FA3C6" font-size="12.5">違反不變量＝成功</text>
+
+    <!-- 4 fix -->
+    <rect x="916" y="188" width="203" height="150" rx="14" fill="#111C34" stroke="#1E3358" stroke-width="1.5"/>
+    <rect x="916" y="188" width="203" height="34" rx="14" fill="#13243F"/>
+    <circle cx="939" cy="205" r="11" fill="#22D3EE"/><text x="939" y="210" text-anchor="middle" fill="#06222B" font-size="13" font-weight="700">3</text>
+    <text x="958" y="210" fill="#9FB4D8" font-size="12.5" font-weight="700">FIX</text>
+    <text x="938" y="262" fill="#E5EDFF" font-size="20" font-weight="700">修復</text>
+    <text x="938" y="292" fill="#8FA3C6" font-size="12.5">5-Why 根因</text>
+    <text x="938" y="311" fill="#8FA3C6" font-size="12.5">＋ 業務守衛</text>
+
+    <!-- 5 verify -->
+    <rect x="1135" y="188" width="203" height="150" rx="14" fill="#111C34" stroke="#1E3358" stroke-width="1.5"/>
+    <rect x="1135" y="188" width="203" height="34" rx="14" fill="#13243F"/>
+    <circle cx="1158" cy="205" r="11" fill="#22D3EE"/><text x="1158" y="210" text-anchor="middle" fill="#06222B" font-size="13" font-weight="700">4</text>
+    <text x="1177" y="210" fill="#9FB4D8" font-size="12.5" font-weight="700">VERIFY</text>
+    <text x="1157" y="262" fill="#E5EDFF" font-size="20" font-weight="700">驗收</text>
+    <text x="1157" y="292" fill="#8FA3C6" font-size="12.5">不變量恆成立</text>
+    <text x="1157" y="311" fill="#8FA3C6" font-size="12.5">＋ 屬性測試</text>
+
+    <!-- 6 recycle -->
+    <rect x="1354" y="188" width="203" height="150" rx="14" fill="#0F2A24" stroke="#2C6E58" stroke-width="1.5"/>
+    <rect x="1354" y="188" width="203" height="34" rx="14" fill="#123A2E"/>
+    <circle cx="1377" cy="205" r="11" fill="#34D399"/><text x="1377" y="210" text-anchor="middle" fill="#06251A" font-size="13" font-weight="700">5</text>
+    <text x="1396" y="210" fill="#A7E8CF" font-size="12" font-weight="700">GUARD+RECYCLE</text>
+    <text x="1376" y="262" fill="#E5FFF4" font-size="20" font-weight="700">守衛 · 回收</text>
+    <text x="1376" y="292" fill="#84C9AF" font-size="12.5">知識沉澱</text>
+    <text x="1376" y="311" fill="#84C9AF" font-size="12.5">規則 + 不變量</text>
+  </g>
+
+  <!-- arrows between boxes -->
+  <g stroke="#5EEAD4" stroke-width="2.5" fill="none">
+    <line x1="245" y1="263" x2="257" y2="263" marker-end="url(#arrow)"/>
+    <line x1="464" y1="263" x2="476" y2="263" marker-end="url(#arrow)"/>
+    <line x1="683" y1="263" x2="695" y2="263" marker-end="url(#arrow)"/>
+    <line x1="902" y1="263" x2="914" y2="263" marker-end="url(#arrow)"/>
+    <line x1="1121" y1="263" x2="1133" y2="263" marker-end="url(#arrow)"/>
+    <line x1="1340" y1="263" x2="1352" y2="263" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- RECYCLE return arrow -->
+  <path d="M1455,338 C1455,392 1455,392 1300,392 L296,392 C141,392 141,392 141,344"
+        fill="none" stroke="#34D399" stroke-width="2.5" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
+  <rect x="700" y="378" width="200" height="28" rx="14" fill="#0F2A24" stroke="#2C6E58"/>
+  <text x="800" y="397" text-anchor="middle" fill="#7FE6C4" font-size="14" font-weight="700">RECYCLE 知識反哺，下輪更準</text>
+
+  <!-- divider -->
+  <line x1="60" y1="450" x2="1540" y2="450" stroke="#1E3358" stroke-width="1"/>
+
+  <!-- Section B title -->
+  <text x="60" y="494" fill="#FBBF24" font-size="17" font-weight="700" letter-spacing="2">三層防線　DEFENSE IN DEPTH</text>
+  <text x="60" y="518" fill="#64748B" font-size="14">由上而下：抓得越廣 → 越深；最後一張網永遠兜得住</text>
+
+  <!-- Layer 1 -->
+  <rect x="60" y="536" width="980" height="76" rx="12" fill="#0E2730" stroke="#1C4A57"/>
+  <rect x="60" y="536" width="10" height="76" rx="5" fill="#22D3EE"/>
+  <text x="92" y="572" fill="#9EE9F5" font-size="20" font-weight="700">① 特徵比對</text>
+  <text x="92" y="597" fill="#7FA9B3" font-size="13.5">抓「已知的錯誤寫法」　·　financial-bug / security-patterns、rules-registry、Semgrep</text>
+  <text x="1020" y="582" text-anchor="end" fill="#5BCBD8" font-size="13">已知漏洞</text>
+
+  <!-- Layer 2 -->
+  <rect x="60" y="624" width="980" height="76" rx="12" fill="#2A2410" stroke="#5A4A1C"/>
+  <rect x="60" y="624" width="10" height="76" rx="5" fill="#FBBF24"/>
+  <text x="92" y="660" fill="#FCD974" font-size="20" font-weight="700">② Taint 汙染流 source → sink</text>
+  <text x="92" y="685" fill="#B3A06A" font-size="13.5">抓「已知的攻擊面」　·　money-flow-map、授權歸屬矩陣、數值決定權與清洗閘登錄</text>
+  <text x="1020" y="670" text-anchor="end" fill="#E5B84B" font-size="13">攻擊路徑</text>
+
+  <!-- Layer 3 -->
+  <rect x="60" y="712" width="980" height="76" rx="12" fill="#231A33" stroke="#4A3A6B"/>
+  <rect x="60" y="712" width="10" height="76" rx="5" fill="#A78BFA"/>
+  <text x="92" y="748" fill="#C9B8FB" font-size="20" font-weight="700">③ 金融不變量</text>
+  <text x="92" y="773" fill="#9F8FC4" font-size="13.5">抓「未知手法的後果」　·　金錢守恆、餘額非負、借貸平衡　→ 屬性測試當 oracle</text>
+  <text x="1020" y="758" text-anchor="end" fill="#B49BFB" font-size="13">未知後果</text>
+
+  <!-- Evidence gate panel -->
+  <rect x="1080" y="536" width="460" height="252" rx="14" fill="#10182B" stroke="#243a63" stroke-width="1.5"/>
+  <text x="1110" y="574" fill="#F87171" font-size="18" font-weight="700">證據門檻　EVIDENCE GATE</text>
+  <text x="1110" y="600" fill="#8FA3C6" font-size="13.5">沒有證據，就沒有嚴重度</text>
+
+  <rect x="1110" y="620" width="150" height="48" rx="10" fill="#2A1E22" stroke="#7A3B3B"/>
+  <text x="1185" y="640" text-anchor="middle" fill="#FCA5A5" font-size="14" font-weight="700">candidate</text>
+  <text x="1185" y="658" text-anchor="middle" fill="#B98787" font-size="11">疑似，禁喊高危</text>
+
+  <line x1="1262" y1="644" x2="1356" y2="644" stroke="#93A4C7" stroke-width="2.5" fill="none" marker-end="url(#arrowDim)"/>
+
+  <rect x="1360" y="620" width="160" height="48" rx="10" fill="#0F2A24" stroke="#2C6E58"/>
+  <text x="1440" y="640" text-anchor="middle" fill="#86EFAC" font-size="14" font-weight="700">confirmed</text>
+  <text x="1440" y="658" text-anchor="middle" fill="#7FB89F" font-size="11">才進 TRIAGE</text>
+
+  <text x="1110" y="700" fill="#9FB4D8" font-size="12.5">通過門檻需備齊：</text>
+  <text x="1124" y="722" fill="#8FA3C6" font-size="12.5">· 汙染路徑（source→sink 可定位）</text>
+  <text x="1124" y="742" fill="#8FA3C6" font-size="12.5">· DB 證據（唯一索引 / 鎖 / 狀態過濾）</text>
+  <text x="1124" y="762" fill="#8FA3C6" font-size="12.5">· 反證檢查（主動證明自己是錯的）</text>
+
+  <!-- Footer stat chips -->
+  <g font-size="14" font-weight="600">
+    <rect x="60" y="916" width="180" height="40" rx="20" fill="#13243F" stroke="#1E3358"/>
+    <text x="150" y="941" text-anchor="middle" fill="#9FB4D8">知識庫 8 → 26 檔</text>
+    <rect x="252" y="916" width="150" height="40" rx="20" fill="#13243F" stroke="#1E3358"/>
+    <text x="327" y="941" text-anchor="middle" fill="#9FB4D8">7 階段閉環</text>
+    <rect x="414" y="916" width="190" height="40" rx="20" fill="#0F2A24" stroke="#2C6E58"/>
+    <text x="509" y="941" text-anchor="middle" fill="#86EFAC">Semgrep 實測 5/5</text>
+    <rect x="616" y="916" width="220" height="40" rx="20" fill="#0F2A24" stroke="#2C6E58"/>
+    <text x="726" y="941" text-anchor="middle" fill="#86EFAC">端到端 demo 跑通閉環</text>
+    <rect x="848" y="916" width="300" height="40" rx="20" fill="#231A33" stroke="#4A3A6B"/>
+    <text x="998" y="941" text-anchor="middle" fill="#C9B8FB">三模型覆查 · Claude · Codex · Gemini</text>
+  </g>
+  <text x="1540" y="945" text-anchor="end" fill="#475569" font-size="13">Java 21 · Spring Boot 3 · 金融結算系統</text>
+</svg>
