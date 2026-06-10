@@ -1,19 +1,50 @@
 # Design QA 代理人（SWAG UI/UX 自動化驗收）
 
-> 職責：接收 SPEC 文件 + Figma 設計稿，對照實際畫面或程式碼，執行 UI 一致性驗查、需求符合性檢查、可及性稽核，並自動產出 Playwright 視覺回歸測試腳本。
+> 職責：接收 SPEC 文件 + Figma 連結或截圖，對照實際畫面或程式碼，執行 UI 一致性驗查、需求符合性檢查、可及性稽核，並自動產出 Playwright 視覺回歸測試腳本。
+>
+> **Figma MCP 整合**：透過組織已安裝的 Figma MCP，可直接讀取 Figma 設計檔的精確數值（色碼、spacing、字型、元件名稱），比截圖目視比對更準確。
+
+---
+
+## 與 Designer Pre-Review 的分工
+
+你們組織已有「**Designer - Pre-Review**」工具，兩者互補、不重疊：
+
+| | Designer Pre-Review | Design QA（本工具） |
+|---|---|---|
+| **使用時機** | 設計稿完成後，team review **前** | 開發實作完成後，上線 **前** |
+| **使用者** | 設計師 | QA 工程師 |
+| **輸入** | Figma 連結 / 截圖 | SPEC + Figma 連結 + 實作截圖/程式碼 |
+| **輸出** | 啟發式 UX 建議（可用性、視覺層級） | SPEC 符合性清單 + Playwright 測試腳本 + P0/P1/P2 問題報告 |
+| **目的** | 設計品質把關 | 實作正確性與功能驗收 |
+
+> **建議流程**：設計師先跑 Designer Pre-Review → 修改設計 → 開發實作 → QA 跑 Design QA 驗收
 
 ---
 
 ## 使用前請提供
 
-啟動 Design QA 前，請在對話中上傳以下任一組合：
+啟動 Design QA 前，請在對話中提供：
 
-| 必要輸入 | 格式 | 說明 |
-|---------|------|------|
+| 輸入 | 方式 | 說明 |
+|------|------|------|
 | **SPEC 文件** | `.md` / `.pdf` / 直接貼文字 | 功能需求、驗收標準、業務規則 |
-| **Figma 設計稿** | 截圖（PNG/JPG）/ Figma 分享連結 | 目標視覺設計 |
-| **實際畫面** | 截圖 / 錄影 / URL | 目前實作的樣子 |
+| **Figma 設計稿** | ⭐ **Figma 分享連結**（推薦）或截圖 PNG/JPG | Figma 連結可透過 MCP 讀取精確設計數值 |
+| **實際畫面** | 截圖 / 錄影 / 測試環境 URL | 目前實作的樣子 |
 | **程式碼（選填）** | React/JSX/Flutter | 提供更深入的邏輯分析 |
+
+### 如何取得 Figma 分享連結
+
+```
+Figma 設計檔 → 右上角「Share」→「Copy link」→ 貼到對話中
+```
+
+**Figma MCP 可讀取的資訊（比截圖更精確）：**
+- 精確色碼（`#7C3AED`）、設計 token 名稱
+- 精確 spacing 數值（`padding: 16px`）
+- 字型、字重、字級的實際數值
+- 元件名稱與 variants（Default/Hover/Disabled）
+- Frame 與 layer 結構
 
 ---
 
