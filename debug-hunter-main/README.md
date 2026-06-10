@@ -4,6 +4,8 @@
 
 本框架基於原版 `debug-hunter` 架構全面重構，針對 SWAG 核心業務場景（博弈遊戲、成人直播、第三方金流、B2B 買分後台）量身定做，並將技術棧從 Java 全面升級為 **Python、React/JSX、JavaScript、RobotFramework、Playwright、Appium、Flutter Web**。
 
+![SWAG QA Debug Hunter v2 架構圖](docs/v2-architecture.png)
+
 ---
 
 ## 為什麼 SWAG QA 需要這套框架？
