@@ -32,7 +32,16 @@ external_refs: []
 | **environment-context-patterns.md** | 模式庫 | 環境脈絡：OS/裝置/網路/VPN/地理位置偵測，環境對測試結果影響模式 | 全域（強制前置） |
 | **design-qa-patterns.md** | 模式庫 | Design QA：Figma vs 實作視覺比對、SPEC 符合性、WCAG 可及性、RWD 斷點 | VERIFY |
 
-### 1.2 業務支援知識庫
+### 1.2 SWAG 產品與業務知識庫（Notion 同步）
+
+| 檔案名稱 | 類型 | 主要內容 | 適用 Stage |
+|---------|------|---------|-----------|
+| **swag-product-map.md** | 產品地圖 | 7 款產品概覽（Moor/Flutter Web/Sushi/Ramen/MDM/Web/PWA）、環境對照、Ramen 加密機制、測試策略 | 全域（測試前必讀） |
+| **swag-business-logic.md** | 業務邏輯 | Moor 直播模式、計費規則、邀請機制、Show 機制；Web 影片類型、VIP、封鎖；QA 業務不變量清單 | DETECT（判斷是 Bug 還是設計） |
+| **swag-test-process.md** | 測試流程 | 版本節奏（週二測試/週四上線）、Bug 報告模板、FullTest 清單、China QA 城市撥測規範 | 全域（流程依據） |
+| **swag-test-accounts.md** | 帳號管理 | 帳號類型（Mod View/Beta/Non-beta）、VIP 等級、jbot 指令（Tag/鑽石）、帳號準備 Checklist | REPRODUCE/VERIFY |
+
+### 1.3 業務支援知識庫
 
 | 檔案名稱 | 類型 | 主要內容 | 適用 Stage |
 |---------|------|---------|-----------|
@@ -41,7 +50,7 @@ external_refs: []
 | **financial-security-patterns.md** | 模式庫 | 金融安全模式：IDOR、Mass Assignment、重放攻擊、審計日誌 | DETECT |
 | **financial-invariants.md** | 不變量 | 金融系統不變量（守恆、單調、冪等、狀態機） | DETECT/VERIFY |
 
-### 1.3 規則與清單
+### 1.4 規則與清單
 
 | 檔案名稱 | 類型 | 主要內容 | 適用 Stage |
 |---------|------|---------|-----------|
@@ -49,7 +58,7 @@ external_refs: []
 | **payment-checklist.md** | 檢查清單 | 支付/點數 PR 檢查清單（30 項）：精度、驗簽、冪等、業務守衛 | FIX |
 | **settlement-checklist.md** | 檢查清單 | Java 結算系統 PR 檢查清單（BigDecimal、事務、並發、冪等） | FIX |
 
-### 1.4 工具與自動化
+### 1.5 工具與自動化
 
 | 檔案名稱 | 類型 | 主要內容 | 適用 Stage |
 |---------|------|---------|-----------|
@@ -58,7 +67,7 @@ external_refs: []
 | **reproduce-scenarios.md** | 重現場景 | Bug 重現腳本和場景（SCENE-*） | REPRODUCE |
 | **attack-regression-corpus.md** | 語料庫 | 已確認漏洞的回歸測試語料（CORP-*） | VERIFY/RECYCLE |
 
-### 1.5 系統設計與威脅模型
+### 1.6 系統設計與威脅模型
 
 | 檔案名稱 | 類型 | 主要內容 | 適用 Stage |
 |---------|------|---------|-----------|
@@ -69,7 +78,7 @@ external_refs: []
 | **value-authority-sanitizer-registry.md** | 登錄 | 數值域五閘（來源/上限/精度/原子/冪等） | DETECT |
 | **persistence-consistency-controls.md** | 清單 | 資料庫一致性控制（PAT-PERSIST-*） | DETECT/VERIFY |
 
-### 1.6 分析與輔助工具
+### 1.7 分析與輔助工具
 
 | 檔案名稱 | 類型 | 主要內容 | 適用 Stage |
 |---------|------|---------|-----------|
