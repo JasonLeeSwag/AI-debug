@@ -29,6 +29,8 @@ external_refs: []
 | **payment-gateway-patterns.md** | 模式庫 | 金流支付整合：ECPay/91app/支付寶/微信驗簽、金額比對、冪等 | DETECT |
 | **streaming-platform-patterns.md** | 模式庫 | 直播平台：打賞冪等、主播分潤、年齡驗證、訂閱系統 | DETECT |
 | **qa-automation-patterns.md** | 模式庫 | QA 自動化：Robot Framework、Playwright、Appium 最佳實踐 | VERIFY |
+| **environment-context-patterns.md** | 模式庫 | 環境脈絡：OS/裝置/網路/VPN/地理位置偵測，環境對測試結果影響模式 | 全域（強制前置） |
+| **design-qa-patterns.md** | 模式庫 | Design QA：Figma vs 實作視覺比對、SPEC 符合性、WCAG 可及性、RWD 斷點 | VERIFY |
 
 ### 1.2 業務支援知識庫
 
