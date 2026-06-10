@@ -6,6 +6,8 @@
 
 ![SWAG QA Debug Hunter v2 架構圖](docs/v2-architecture.png)
 
+> **第一次使用？** 先看 [新手入門指南 →](docs/getting-started.md)
+
 ---
 
 ## 為什麼 SWAG QA 需要這套框架？
