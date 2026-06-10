@@ -1,0 +1,192 @@
+# SWAG 平台 Semgrep 安全規則
+# 適用：Python / JavaScript / JSX
+# 版本：v1.0
+
+rules:
+  # === 博弈遊戲安全規則 ===
+
+  - id: swag-rule-gam-001-python-random-in-gambling
+    patterns:
+      - pattern: import random
+      - pattern-inside: |
+          def $FUNC(...):
+            ...
+            random.$METHOD(...)
+            ...
+    message: |
+      RULE-GAM-001: 博弈遊戲禁止使用 Python `random` 模組。
+      `random` 使用 Mersenne Twister，可被預測，必須使用密碼學安全的 `secrets` 模組。
+      修復：import secrets; result = secrets.choice(options)
+    languages: [python]
+    severity: ERROR
+    metadata:
+      swag_rule: RULE-GAM-001
+      pattern_ref: PAT-GAM-001
+      category: gambling-rng
+
+  - id: swag-rule-gam-002-float-in-odds-calculation
+    patterns:
+      - pattern: $X * $Y
+      - pattern-inside: |
+          def $FUNC(...):
+            ...
+        # 如果函數名稱包含 payout / odds / calculate / settle
+    message: |
+      RULE-GAM-002: 博弈賠率/賠付計算疑似使用 float，應使用 Decimal。
+      請確認相關計算使用 from decimal import Decimal。
+    languages: [python]
+    severity: WARNING
+    metadata:
+      swag_rule: RULE-GAM-002
+      pattern_ref: PAT-GAM-002
+
+  # === 點數/金流計算規則 ===
+
+  - id: swag-rule-cred-001-float-in-points-calculation
+    patterns:
+      - pattern: float($X) * $Y
+      - pattern-not: Decimal(...)
+    message: |
+      RULE-CRED-001: 點數計算禁止使用 float。
+      float 有浮點精度問題，點數計算必須使用 Python Decimal。
+      修復：from decimal import Decimal; points = Decimal(str(amount)) * rate
+    languages: [python]
+    severity: ERROR
+    metadata:
+      swag_rule: RULE-CRED-001
+      pattern_ref: PAT-CRED-001
+
+  - id: swag-rule-cred-002-unsafe-balance-update
+    patterns:
+      - pattern: |
+          $USER.points = $USER.points + $DELTA
+          $USER.save(...)
+    message: |
+      RULE-CRED-002: 點數餘額更新非原子操作，存在並發覆蓋風險。
+      修復：使用 Django F() 表達式或 SELECT FOR UPDATE。
+      User.objects.filter(id=user_id).update(points=F('points') + delta)
+    languages: [python]
+    severity: ERROR
+    metadata:
+      swag_rule: RULE-CRED-002
+      pattern_ref: PAT-CRED-003
+
+  # === 支付回調安全規則 ===
+
+  - id: swag-rule-pay-001-missing-signature-verification
+    patterns:
+      - pattern: |
+          def $HANDLER(request, ...):
+            ...
+            $DATA = request.$METHOD(...)
+            ...
+            credit_points(...)
+      - pattern-not: |
+          def $HANDLER(request, ...):
+            ...
+            verify_signature(...)
+            ...
+            credit_points(...)
+    message: |
+      RULE-PAY-001: 支付回調處理器疑似缺少簽章驗證就直接入帳。
+      所有支付回調（綠界/支付寶/微信支付）必須先驗證簽章再處理業務邏輯。
+    languages: [python]
+    severity: ERROR
+    metadata:
+      swag_rule: RULE-PAY-001
+      pattern_ref: PAT-PAY-001
+
+  - id: swag-rule-pay-002-missing-amount-verification
+    patterns:
+      - pattern: |
+          $CALLBACK_AMOUNT = $DATA[...]
+          ...
+          credit_points(...)
+      - pattern-not: |
+          assert $CALLBACK_AMOUNT == $ORDER_AMOUNT
+    message: |
+      RULE-PAY-002: 支付回調未比對回調金額與訂單金額。
+      攻擊者可竄改回調金額，充入與實際支付不符的點數。
+      修復：if callback_amount != order.amount: raise InvalidPaymentError
+    languages: [python]
+    severity: ERROR
+    metadata:
+      swag_rule: RULE-PAY-002
+      pattern_ref: PAT-PAY-002
+
+  # === 安全/舞弊規則 ===
+
+  - id: swag-rule-sec-001-idor-user-id-from-request
+    patterns:
+      - pattern: |
+          user_id = request.$PARAM[...]
+          ...
+          credit_points(user_id, ...)
+      - pattern-not: |
+          user_id = request.user.id
+    message: |
+      RULE-SEC-001: 資金操作使用了來自請求的 user_id，而非 JWT 認證的 user_id。
+      這可能導致 IDOR（不安全的直接物件參照）攻擊，攻擊者可修改 user_id 操作他人帳戶。
+      修復：使用 request.user.id 或 JWT 解析的 authenticated_user_id
+    languages: [python]
+    severity: ERROR
+    metadata:
+      swag_rule: RULE-SEC-001
+      pattern_ref: PAT-SEC-IDOR
+
+  - id: swag-rule-sec-002-sensitive-data-in-logs
+    patterns:
+      - pattern: logger.$LEVEL(..., $CARD_NUM, ...)
+      - metavariable-regex:
+          metavariable: $CARD_NUM
+          regex: .*(card|cvv|password|secret|token|payment_info).*
+    message: |
+      RULE-SEC-002: 疑似將敏感資料（卡號/CVV/密碼/Token）寫入日誌。
+      敏感資料不得明文出現在日誌中，需進行遮罩處理。
+      修復：log.info("card=%s", mask_card_number(card_number))
+    languages: [python]
+    severity: WARNING
+    metadata:
+      swag_rule: RULE-SEC-002
+
+  - id: swag-rule-sec-003-sql-injection-python
+    patterns:
+      - pattern: cursor.execute(f"... {$PARAM} ...")
+      - pattern: cursor.execute("..." + $PARAM + "...")
+    message: |
+      RULE-SEC-003: SQL 注入風險！使用字串拼接構造 SQL 查詢。
+      修復：使用參數化查詢 cursor.execute("SELECT ... WHERE id = %s", [user_id])
+    languages: [python]
+    severity: ERROR
+    metadata:
+      swag_rule: RULE-SEC-003
+
+  # === JavaScript/React 規則 ===
+
+  - id: swag-rule-js-sec-001-console-log-sensitive
+    patterns:
+      - pattern: console.log($DATA)
+      - metavariable-regex:
+          metavariable: $DATA
+          regex: .*(token|password|card|payment|secret).*
+    message: |
+      JS-SEC-001: 疑似將敏感資料輸出到 console.log。
+      前端不得記錄 Token、密碼、支付資訊等敏感資料。
+    languages: [javascript, typescript]
+    severity: WARNING
+
+  - id: swag-rule-js-sec-002-amount-in-client
+    patterns:
+      - pattern: |
+          const $AMOUNT = $X;
+          fetch($URL, {
+            method: "POST",
+            body: JSON.stringify({amount: $AMOUNT, ...})
+          })
+    message: |
+      JS-SEC-002: 前端直接傳送金額參數到後端。
+      金額必須由後端根據訂單 ID 重新計算，不信任前端傳入的金額。
+    languages: [javascript, typescript]
+    severity: WARNING
+    metadata:
+      swag_rule: RULE-SEC-AMOUNT-TAMPERING
