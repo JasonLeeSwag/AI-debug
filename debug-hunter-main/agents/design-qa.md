@@ -143,12 +143,14 @@ Figma 設計檔 → 右上角「Share」→「Copy link」→ 貼到對話中
 
 ---
 
-### 5. 自動產出 Playwright 視覺回歸測試
+### 5. 自動產出並執行 Playwright 視覺回歸測試
 
-根據以上分析，自動生成可執行的測試腳本：
+根據以上分析，自動生成測試腳本並**立即執行**，無需人工介入。
+
+#### 5a. 產出的測試腳本範例
 
 ```javascript
-// 由 Design QA 代理人自動生成
+// 由 Design QA 代理人自動生成，儲存於 tests/design-qa/<功能名稱>.spec.js
 const { test, expect } = require('@playwright/test');
 
 test.describe('SWAG 支付儲值頁面 - Design QA', () => {
@@ -156,9 +158,8 @@ test.describe('SWAG 支付儲值頁面 - Design QA', () => {
   test('TC-UI-001: 儲值頁面載入後視覺快照比對', async ({ page }) => {
     await page.goto('/payment/topup');
     await page.waitForLoadState('networkidle');
-    // 視覺快照回歸測試
     await expect(page).toHaveScreenshot('topup-page-default.png', {
-      maxDiffPixelRatio: 0.02  // 允許 2% 像素差異
+      maxDiffPixelRatio: 0.02
     });
   });
 
@@ -166,33 +167,69 @@ test.describe('SWAG 支付儲值頁面 - Design QA', () => {
     await page.goto('/payment/topup');
     const input = page.locator('[data-testid="amount-input"]');
     await input.fill('-100');
-    await expect(input).toHaveValue('');  // 負數應被清除
+    await expect(input).toHaveValue('');
     await input.fill('1.5');
-    await expect(input).toHaveValue('');  // 小數應被清除
+    await expect(input).toHaveValue('');
     await input.fill('500');
     await expect(input).toHaveValue('500');
   });
 
-  test('TC-UI-003: 支付按鈕 Loading 狀態', async ({ page }) => {
+  test('TC-UI-003: 支付按鈕 Loading 狀態防重複點擊', async ({ page }) => {
     await page.goto('/payment/topup');
     await page.locator('[data-testid="amount-input"]').fill('100');
     await page.locator('[data-testid="pay-button"]').click();
-    // 點擊後應立即變 loading，防止重複提交
     await expect(page.locator('[data-testid="pay-button"]')).toBeDisabled();
     await expect(page.locator('[data-testid="pay-button"]')).toContainText('處理中');
   });
 
   test('TC-UI-004: 空狀態 - 無儲值方式可用', async ({ page }) => {
-    // Mock API 回傳空陣列
     await page.route('/api/payment/methods', route =>
       route.fulfill({ json: { methods: [] } })
     );
     await page.goto('/payment/topup');
     await expect(page.locator('[data-testid="empty-state"]')).toBeVisible();
-    await expect(page.locator('[data-testid="empty-state"]')).toContainText('目前無可用的儲值方式');
   });
 
 });
+```
+
+#### 5b. 自動執行流程（Claude Code CLI 模式）
+
+在 Claude Code CLI（Terminal）中執行 Design QA 時，代理人會完成以下完整流程：
+
+```
+步驟 1：分析 SPEC + Figma，產出測試腳本
+         ↓
+步驟 2：將腳本寫入 tests/design-qa/<功能名稱>.spec.js
+         ↓
+步驟 3：執行 npx playwright test tests/design-qa/<功能名稱>.spec.js
+         ↓
+步驟 4：擷取執行結果（pass/fail/截圖）
+         ↓
+步驟 5：將結果整合進最終 Design QA 報告回傳
+```
+
+> **前提條件**：需完成一次性環境設定（見下方）。設定完畢後，後續每次 Design QA 自動完成到步驟 5，不需任何人工介入。
+
+#### 5c. 一次性環境設定
+
+在專案根目錄執行一次即可：
+
+```bash
+# 安裝 Playwright
+npm install
+
+# 安裝瀏覽器（Chromium / Firefox / WebKit）
+npx playwright install
+
+# 設定測試目標 URL（每次換測試版本時更新）
+export SWAG_TEST_URL=https://v3-277.app.swag.live
+```
+
+或將 URL 寫入 `.env.local`（不會被 Git 追蹤）：
+
+```bash
+echo "SWAG_TEST_URL=https://v3-277.app.swag.live" > .env.local
 ```
 
 ---
@@ -204,6 +241,7 @@ test.describe('SWAG 支付儲值頁面 - Design QA', () => {
 **頁面 / 功能**：{功能名稱}
 **SPEC 版本**：{版本號或日期}
 **Figma 連結**：{連結}
+**測試目標 URL**：{SWAG_TEST_URL}
 **檢查日期**：{日期}
 **執行者**：Claude Design QA Agent
 
@@ -211,31 +249,56 @@ test.describe('SWAG 支付儲值頁面 - Design QA', () => {
 - 視覺一致性：{通過數}/{總項數}
 - SPEC 符合性：{通過數}/{總項數}
 - 可及性：{通過數}/{總項數}
-- 嚴重問題：{P0 數量} 個
+- 嚴重問題（P0）：{數量} 個
+
+## Playwright 自動測試結果
+| 測試案例 | 結果 | 備註 |
+|---------|------|------|
+| TC-UI-001: 視覺快照比對 | ✅ PASS | — |
+| TC-UI-002: 正整數輸入驗證 | ❌ FAIL | 截圖：test-results/topup-fail.png |
+| TC-UI-003: Loading 狀態 | ✅ PASS | — |
+| TC-UI-004: 空狀態顯示 | ✅ PASS | — |
 
 ## 問題清單
 | ID | 嚴重度 | 類別 | 描述 | SPEC 條目 | 建議修復 |
 |----|--------|------|------|----------|---------|
 | UI-001 | P0 | 功能缺失 | 支付失敗後缺少重試按鈕 | SPEC-002 | 在 ErrorState 元件加入 RetryButton |
-| UI-002 | P1 | 視覺差異 | 主按鈕顏色 #8B5CF6，設計稿為 #7C3AED | - | 更新為 design token `--color-primary` |
-| UI-003 | P2 | 可及性 | 金額輸入框缺少 aria-label | - | 加入 `aria-label="儲值金額"` |
+| UI-002 | P1 | 視覺差異 | 主按鈕顏色 #8B5CF6，設計稿為 #7C3AED | — | 更新為 design token `--color-primary` |
+| UI-003 | P2 | 可及性 | 金額輸入框缺少 aria-label | — | 加入 `aria-label="儲值金額"` |
 
-## 自動產出的測試腳本
-（附 Playwright 腳本，可直接複製執行）
+## 測試腳本位置
+`tests/design-qa/{功能名稱}.spec.js`（已寫入本機，可重複執行）
 
 ## 下一步建議
 1. P0 問題需在上線前修復
 2. P1 問題請在本次 Sprint 處理
 3. 可及性問題列入下一 Sprint backlog
+4. 修復後重跑：`npx playwright test tests/design-qa/{功能名稱}.spec.js`
 ```
 
 ---
 
 ## 啟動指令
 
-在 claude.ai Project 對話中，上傳 SPEC 和 Figma 截圖後，輸入：
+### claude.ai Project（產出腳本，不自動執行）
+
+上傳 SPEC 和 Figma 截圖後，輸入：
 
 ```
 請針對我上傳的 SPEC 和 Figma 設計稿，對 [功能名稱] 執行完整 Design QA，
 包含視覺一致性、需求符合性、可及性檢查，並產出 Playwright 測試腳本。
+```
+
+### Claude Code CLI（產出腳本 + 自動執行，全自動化）
+
+確認環境設定完畢後，在 Terminal 啟動 Claude Code，輸入相同指令即可——代理人會產出腳本後直接執行，並把測試結果一起回傳。
+
+```bash
+# 啟動 Claude Code
+claude
+
+# 然後在對話中輸入：
+請針對我上傳的 SPEC 和 Figma 設計稿，對 [功能名稱] 執行完整 Design QA，
+包含視覺一致性、需求符合性、可及性，產出 Playwright 腳本並立即執行，
+測試 URL：https://v3-277.app.swag.live
 ```

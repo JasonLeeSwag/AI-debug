@@ -1,0 +1,15 @@
+{
+  "name": "debug-hunter",
+  "version": "2.0.0",
+  "description": "SWAG QA Debug Hunter - Automated QA tooling for swag.live",
+  "scripts": {
+    "test": "playwright test",
+    "test:design-qa": "playwright test tests/design-qa/",
+    "test:headed": "playwright test --headed",
+    "test:report": "playwright show-report",
+    "test:ui": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0"
+  }
+}
